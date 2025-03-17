@@ -22,15 +22,15 @@
 
   const config = getConfig();
 
-  // Функция для создания диалога
+  // Функция для создания диалога (но не показывать его сразу)
   function createDialog() {
     if (config) {
       const dialog = document.createElement("div");
+      dialog.classList.add("dialog-widget", config.theme);
+
       dialog.innerHTML = `
-        <div class="dialog-widget ${config.theme}">
-          <h2>${config.title}</h2>
-          <a href="${config.link}" class="dialog-button">${config.buttonText}</a>
-        </div>
+        <h2>${config.title}</h2>
+        <a href="${config.link}" class="dialog-button">${config.buttonText}</a>
       `;
 
       // Стили
@@ -60,22 +60,20 @@
 
       // Добавляем в документ
       document.head.appendChild(styles);
-      document.body.appendChild(dialog);
-    } else {
-      // 4️⃣ Если ничего не найдено – создаём iframe
-      const iframe = document.createElement("iframe");
-      iframe.src = "https://example.com/dialog-widget.html";
-      iframe.width = "400";
-      iframe.height = "300";
-      iframe.style.position = "fixed";
-      iframe.style.bottom = "20px";
-      iframe.style.right = "20px";
-      iframe.style.border = "none";
 
-      document.body.appendChild(iframe);
+      // Помещаем диалог в объект, но не показываем его
+      window.dialogWidget = dialog;
     }
   }
 
-  // Экспортируем функцию для использования снаружи
-  window.showDialogWidget = createDialog;
+  // Экспортируем функцию для отображения диалога
+  window.showDialogWidget = function () {
+    if (window.dialogWidget) {
+      document.body.appendChild(window.dialogWidget); // Показываем диалог
+    }
+  };
+
+  // Сразу создаем диалог, но не показываем его
+  createDialog();
+
 })();
