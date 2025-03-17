@@ -1,79 +1,105 @@
-(function () {
-  function getConfig() {
-    // 1️⃣ Пробуем получить настройки из JS (если они есть)
-    if (window.DialogWidgetConfig) {
-      return window.DialogWidgetConfig;
-    }
+// dialog-widget.js
 
-    // 2️⃣ Если нет JS, ищем настройки в HTML (data-атрибуты)
-    const widget = document.getElementById("dialog-widget");
-    if (widget) {
-      return {
-        title: widget.getAttribute("data-title") || "Розыгрыш",
-        link: widget.getAttribute("data-link") || "#",
-        buttonText: widget.getAttribute("data-button") || "Подробнее",
-        theme: widget.getAttribute("data-theme") || "light",
-      };
-    }
+(function() {
+  // Функция для создания модального окна
+  function createModal(drawTitle) {
+    // Создание контейнера для модального окна
+    const modalOverlay = document.createElement('div');
+    modalOverlay.style.position = 'fixed';
+    modalOverlay.style.top = '0';
+    modalOverlay.style.left = '0';
+    modalOverlay.style.width = '100%';
+    modalOverlay.style.height = '100%';
+    modalOverlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+    modalOverlay.style.zIndex = '9999';
+    modalOverlay.style.display = 'flex';
+    modalOverlay.style.justifyContent = 'center';
+    modalOverlay.style.alignItems = 'center';
 
-    // 3️⃣ Если ничего не найдено – загружаем через iframe
-    return null;
+    const modal = document.createElement('div');
+    modal.style.backgroundColor = '#fff';
+    modal.style.padding = '20px';
+    modal.style.borderRadius = '8px';
+    modal.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.1)';
+    modal.style.maxWidth = '400px';
+    modal.style.width = '100%';
+
+    // Заголовок розыгрыша
+    const modalTitle = document.createElement('h2');
+    modalTitle.textContent = drawTitle || "Розыгрыш";
+    modalTitle.style.textAlign = 'center';
+
+    // Поле для ввода email
+    const emailInputLabel = document.createElement('label');
+    emailInputLabel.textContent = 'Введите ваш email:';
+    emailInputLabel.style.display = 'block';
+    emailInputLabel.style.marginBottom = '8px';
+
+    const emailInput = document.createElement('input');
+    emailInput.type = 'email';
+    emailInput.placeholder = 'Ваш email';
+    emailInput.style.width = '100%';
+    emailInput.style.padding = '8px';
+    emailInput.style.marginBottom = '15px';
+    emailInput.style.borderRadius = '4px';
+    emailInput.style.border = '1px solid #ddd';
+
+    // Кнопка отправки
+    const submitButton = document.createElement('button');
+    submitButton.textContent = 'Принять участие';
+    submitButton.style.backgroundColor = '#4CAF50';
+    submitButton.style.color = 'white';
+    submitButton.style.border = 'none';
+    submitButton.style.padding = '10px 20px';
+    submitButton.style.borderRadius = '4px';
+    submitButton.style.cursor = 'pointer';
+
+    submitButton.addEventListener('click', function() {
+      if (emailInput.value) {
+        alert('Вы успешно приняли участие!');
+        modalOverlay.remove(); // Закрыть окно
+      } else {
+        alert('Пожалуйста, введите ваш email.');
+      }
+    });
+
+    // Кнопка закрытия
+    const closeButton = document.createElement('button');
+    closeButton.textContent = 'Закрыть';
+    closeButton.style.backgroundColor = '#f44336';
+    closeButton.style.color = 'white';
+    closeButton.style.border = 'none';
+    closeButton.style.padding = '8px 16px';
+    closeButton.style.borderRadius = '4px';
+    closeButton.style.marginTop = '10px';
+    closeButton.style.cursor = 'pointer';
+
+    closeButton.addEventListener('click', function() {
+      modalOverlay.remove(); // Закрыть окно
+    });
+
+    modal.appendChild(modalTitle);
+    modal.appendChild(emailInputLabel);
+    modal.appendChild(emailInput);
+    modal.appendChild(submitButton);
+    modal.appendChild(closeButton);
+    modalOverlay.appendChild(modal);
+
+    // Добавление модального окна в body
+    document.body.appendChild(modalOverlay);
   }
 
-  const config = getConfig();
-
-  // Функция для создания диалога
-  function createDialog() {
-    if (config) {
-      const dialog = document.createElement("div");
-      dialog.classList.add("dialog-widget", config.theme);
-
-      dialog.innerHTML = `
-        <h2>${config.title}</h2>
-        <a href="${config.link}" class="dialog-button">${config.buttonText}</a>
-      `;
-
-      // Стили
-      const styles = document.createElement("style");
-      styles.innerHTML = `
-        .dialog-widget {
-          position: fixed;
-          bottom: 20px;
-          right: 20px;
-          background: white;
-          padding: 15px;
-          border-radius: 8px;
-          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .dialog-widget.dark { background: #333; color: white; }
-        .dialog-button {
-          display: block;
-          margin-top: 10px;
-          padding: 8px;
-          background: blue;
-          color: white;
-          text-align: center;
-          border-radius: 5px;
-          text-decoration: none;
-        }
-      `;
-
-      // Добавляем стили в head
-      document.head.appendChild(styles);
-
-      // Помещаем диалог в объект window
-      window.dialogWidget = dialog;
+  // Функция для привязки модального окна к кнопке "Узнать"
+  function attachModalToButton(buttonSelector, drawTitle) {
+    const button = document.querySelector(buttonSelector);
+    if (button) {
+      button.addEventListener('click', function() {
+        createModal(drawTitle);
+      });
     }
   }
 
-  // Экспортируем функцию для отображения диалога
-  window.showDialogWidget = function () {
-    if (window.dialogWidget) {
-      document.body.appendChild(window.dialogWidget); // Показываем диалог
-    }
-  };
-
-  // Сразу создаем диалог, но не показываем его
-  createDialog();
+  // Экспортируем функцию, чтобы использовать в других проектах
+  window.attachModalToButton = attachModalToButton;
 
 })();
