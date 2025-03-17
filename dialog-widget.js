@@ -1,28 +1,29 @@
 (function () {
-    function getConfig() {
-      // 1️⃣ Пробуем получить настройки из JS (если они есть)
-      if (window.DialogWidgetConfig) {
-        return window.DialogWidgetConfig;
-      }
-  
-      // 2️⃣ Если нет JS, ищем настройки в HTML (data-атрибуты)
-      const widget = document.getElementById("dialog-widget");
-      if (widget) {
-        return {
-          title: widget.getAttribute("data-title") || "Розыгрыш",
-          link: widget.getAttribute("data-link") || "#",
-          buttonText: widget.getAttribute("data-button") || "Подробнее",
-          theme: widget.getAttribute("data-theme") || "light",
-        };
-      }
-  
-      // 3️⃣ Если ничего не найдено – загружаем через iframe
-      return null;
+  function getConfig() {
+    // 1️⃣ Пробуем получить настройки из JS (если они есть)
+    if (window.DialogWidgetConfig) {
+      return window.DialogWidgetConfig;
     }
-  
-    const config = getConfig();
-  
-    // Если настройки нашлись – создаём диалог
+
+    // 2️⃣ Если нет JS, ищем настройки в HTML (data-атрибуты)
+    const widget = document.getElementById("dialog-widget");
+    if (widget) {
+      return {
+        title: widget.getAttribute("data-title") || "Розыгрыш",
+        link: widget.getAttribute("data-link") || "#",
+        buttonText: widget.getAttribute("data-button") || "Подробнее",
+        theme: widget.getAttribute("data-theme") || "light",
+      };
+    }
+
+    // 3️⃣ Если ничего не найдено – загружаем через iframe
+    return null;
+  }
+
+  const config = getConfig();
+
+  // Функция для создания диалога
+  function createDialog() {
     if (config) {
       const dialog = document.createElement("div");
       dialog.innerHTML = `
@@ -31,7 +32,7 @@
           <a href="${config.link}" class="dialog-button">${config.buttonText}</a>
         </div>
       `;
-  
+
       // Стили
       const styles = document.createElement("style");
       styles.innerHTML = `
@@ -56,7 +57,7 @@
           text-decoration: none;
         }
       `;
-  
+
       // Добавляем в документ
       document.head.appendChild(styles);
       document.body.appendChild(dialog);
@@ -70,8 +71,11 @@
       iframe.style.bottom = "20px";
       iframe.style.right = "20px";
       iframe.style.border = "none";
-  
+
       document.body.appendChild(iframe);
     }
-  })();
-  
+  }
+
+  // Экспортируем функцию для использования снаружи
+  window.showDialogWidget = createDialog;
+})();
