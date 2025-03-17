@@ -75,8 +75,7 @@
 
     // Проверка, если пользователь уже принял участие
     if (localStorage.getItem('participated')) {
-      // Добавляем модальное окно в DOM, если пользователь уже участвует
-      document.body.appendChild(modalOverlay);
+      document.body.appendChild(modalOverlay); // Сначала добавляем модальное окно в DOM
       showParticipationMessage(); // Показываем сообщение
       return; // Не показываем форму, так как пользователь уже принял участие
     }
