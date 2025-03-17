@@ -22,7 +22,7 @@
 
   const config = getConfig();
 
-  // Функция для создания диалога (но не показывать его сразу)
+  // Функция для создания диалога
   function createDialog() {
     if (config) {
       const dialog = document.createElement("div");
@@ -58,10 +58,10 @@
         }
       `;
 
-      // Добавляем в документ
+      // Добавляем стили в head
       document.head.appendChild(styles);
 
-      // Помещаем диалог в объект, но не показываем его
+      // Помещаем диалог в объект window
       window.dialogWidget = dialog;
     }
   }
