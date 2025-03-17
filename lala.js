@@ -1,6 +1,12 @@
 (function() {
   // Функция для создания модального окна
   function createModal(drawTitle) {
+    // Проверка, если пользователь уже принял участие
+    if (localStorage.getItem('participated')) {
+      alert('Вы уже приняли участие!');
+      return; // Если участие уже было, не открываем модальное окно снова
+    }
+
     // Создание контейнера для модального окна
     const modalOverlay = document.createElement('div');
     modalOverlay.style.position = 'fixed';
@@ -52,6 +58,17 @@
     submitButton.style.borderRadius = '4px';
     submitButton.style.cursor = 'pointer';
 
+    submitButton.addEventListener('click', function() {
+      if (emailInput.value) {
+        // Сохраняем, что пользователь принял участие
+        localStorage.setItem('participated', 'true');
+        alert('Вы успешно приняли участие!');
+        modalOverlay.remove(); // Закрыть окно
+      } else {
+        alert('Пожалуйста, введите ваш email.');
+      }
+    });
+
     // Кнопка закрытия
     const closeButton = document.createElement('button');
     closeButton.textContent = 'Закрыть';
@@ -63,43 +80,10 @@
     closeButton.style.marginTop = '10px';
     closeButton.style.cursor = 'pointer';
 
-    // Функция для отображения сообщения, если пользователь уже принял участие
-    function showParticipationMessage() {
-      modal.innerHTML = ''; // Очистить все элементы в модальном окне
-      const message = document.createElement('h2');
-      message.textContent = 'Вы успешно приняли участие!';
-      message.style.textAlign = 'center';
-      modal.appendChild(message);
-      modal.appendChild(closeButton); // Кнопка "Закрыть" остаётся
-    }
-
-    // Проверка, если пользователь уже принял участие
-    if (localStorage.getItem('participated')) {
-      document.body.appendChild(modalOverlay); // Сначала добавляем модальное окно в DOM
-      showParticipationMessage(); // Показываем сообщение
-      return; // Не показываем форму, так как пользователь уже принял участие
-    }
-
-    // Обработчик кнопки "Принять участие"
-    submitButton.addEventListener('click', function() {
-      if (emailInput.value) {
-        // Сохраняем, что пользователь принял участие
-        localStorage.setItem('participated', 'true');
-        // Показываем сообщение о принятии участия
-        showParticipationMessage();
-        // Закрываем модальное окно после участия
-        modalOverlay.remove();
-      } else {
-        alert('Пожалуйста, введите ваш email.');
-      }
-    });
-
-    // Обработчик кнопки "Закрыть"
     closeButton.addEventListener('click', function() {
       modalOverlay.remove(); // Закрыть окно
     });
 
-    // Добавление всех элементов в модальное окно
     modal.appendChild(modalTitle);
     modal.appendChild(emailInputLabel);
     modal.appendChild(emailInput);
